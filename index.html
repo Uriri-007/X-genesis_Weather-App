@@ -3,8 +3,10 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <!-- displays site properly based on user's device -->
-        <meta name="description" content="" />
+        <meta
+            name="description"
+            content="A weather app for checking the weather forecasts"
+        />
         <link
             rel="icon"
             type="image/png"
@@ -74,6 +76,31 @@
                     />
                 </svg>
             </div>
+            
+            <div class="conversion-dropdown">
+              <h2 class="switch">Switch to Imperial</h2>
+              <span class="scalar-tags">Temperature</span>
+              <div class="metric unit">
+                <span>Celsius (°C)</span>
+              </div>
+              <div class="imperial unit">
+                <span>Fahrenheit (°F)</span>
+              </div>
+              <span class="scalar-tags">Wind Speed</span>
+              <div class="metric unit">
+                <span>km/h</span>
+              </div>
+              <div class="imperial unit">
+                <span>mph</span>
+              </div>
+              <span class="scalar-tags">Precipitation</span>
+              <div class="metric unit">
+                <span>Millimeters (mm)</span>
+              </div>
+              <div class="imperial unit">
+                <span>Inches (in)</span>
+              </div>
+            </div>
         </header>
 
         <section>
@@ -104,12 +131,37 @@
 
             <div class="weather-forecast">
                 <div class="daily">
-                  <div class="image-data"></div>
+                    <div class="image-data">
+                        <div class="name-and-date">
+                            <h2 class="place-name">France</h2>
+                            <span class="current-date">August</span>
+                        </div>
+                        <div class="icon-and-temp">
+                            <img
+                                src="./assets/images/icon-sunny.webp"
+                                alt=""
+                                class="today-icon"
+                            />
+                            <span class="max-temp">20°</span>
+                        </div>
+                    </div>
                     <div class="present-data">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
+                        <div>
+                            <span class="title">Feels like</span>
+                            <span class="present-value"></span>
+                        </div>
+                        <div>
+                            <span class="title">Humidity</span>
+                            <span class="present-value"></span>
+                        </div>
+                        <div>
+                            <span class="title">Wind</span>
+                            <span class="present-value"></span>
+                        </div>
+                        <div>
+                            <span class="title">Precipitation</span>
+                            <span class="present-value"></span>
+                        </div>
                     </div>
 
                     <div class="daily-forecast">
@@ -145,14 +197,14 @@
                         </div>
                     </div>
                     <div class="eight-hrs-data">
-                      <div></div>
-                      <div></div>
-                      <div></div>
-                      <div></div>
-                      <div></div>
-                      <div></div>
-                      <div></div>
-                      <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
                     </div>
                 </div>
             </div>
@@ -181,16 +233,16 @@
   Search for a city, e.g., New York
   Search-->
 
-        Feels like
+       
         <!-- Insert temperature here -->
 
-        Humidity
+    
         <!-- Insert humidity here -->
 
-        Wind
+      
         <!-- Insert wind here -->
 
-        Precipitation
+      
         <!-- Insert precipitation here -->
 
         <!-- Insert daily forecast for the next 7 days here -->
@@ -201,7 +253,7 @@
     Challenge by <a href="https://www.frontendmentor.io?ref=challenge">Frontend Mentor</a>. 
     Coded by <a href="#">Your Name Here</a>.
   </div>-->
-  
-  <script src="script.js" type="text/javascript" charset="utf-8"></script>
+
+        <script src="script.js" type="text/javascript" charset="utf-8"></script>
     </body>
 </html>
