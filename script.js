@@ -11,8 +11,9 @@ const Domaccess = (() => {
     const dateSpan = document.querySelector(".current-date");
     const todayIconImg = document.querySelector(".today-icon");
     const maxTempSpan = document.querySelector(".max-temp");
-    /*const  = document.querySelector("")
-  const  = document.querySelector("")*/
+    const toggleUnitElem = document.querySelector(".switch");
+    const allMetricDivs = document.querySelectorAll(".metric");
+    const allImperialDivs = document.querySelectorAll(".imperial");
     return {
         dropDowns,
         cityNameInput,
@@ -24,10 +25,13 @@ const Domaccess = (() => {
         cityDiv,
         dateSpan,
         todayIconImg,
-        maxTempSpan
+        maxTempSpan,
+        toggleUnitElem,
+        allMetricDivs,
+        allImperialDivs
     };
 })();
-let isMetric = false;
+let isMetric = true;
 
 //Verify the user input
 function getValidUserData(string) {
@@ -68,38 +72,51 @@ async function getWeatherData() {
             { mode: "cors" }
         );
     }
-    console.log(rawWeatherData);
     const roughData = await rawWeatherData.json();
     console.log(roughData);
     organizeRawData(roughData);
 }
 function organizeRawData(object) {
-    const { current } = object;
-    updateUI(current);
+    const { current_units: currentUnits, current } = object;
+    updateUI(currentUnits, current);
 }
-function updateUI(todays) {
+function updateUI(units, todays) {
+  Domaccess.cityDiv.textContent = Domaccess.cityNameInput.value
     const todaysData = [
-        todays.apparent_temperature,
-        todays.relative_humidity_2m,
-        todays.wind_speed_10m,
-        todays.precipitation
+        Math.floor(todays.apparent_temperature) + "°",
+        todays.relative_humidity_2m + units.relative_humidity_2m,
+        todays.wind_speed_10m + " " + units.wind_speed_10m,
+        todays.precipitation + " " + units.precipitation
     ];
+    Domaccess.maxTempSpan.textContent = Math.floor(todays.temperature_2m) + "°";
     todaysData.forEach((data, index) => {
         Domaccess.todaysDataSpans[index].textContent = data;
-        Domaccess.maxTempSpan.textContent = todays.temperature_2m;
     });
+}
+function getCurrentDate() {
+  const date = new Date
+  const weekDay = date.getDay()
+  const monthDay = date.getDate()
+  const month = date.getMonth()
+  const year = date.getFullYear()
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  
+  return days[weekDay] + ", " + months[month] + " " + monthDay + ", " + year
 }
 
 function showLoadingStates() {}
-
-Domaccess.searchBtn.addEventListener("click", () => {
-    console.log(true);
-    getWeatherData();
-});
+function dropdownConversion() {
+  const conversionBox = Domaccess.toggleUnitElem.parentElement
+  conversionBox.classList.toggle("drop")
+}
 document.addEventListener("DOMContentLoaded", () => {
     if (innerWidth > 1000) {
         Domaccess.blueImgDiv.style.cssText = `background-image: url('./assets/images/bg-today-large.svg')`;
     } else {
         Domaccess.blueImgDiv.style.cssText = `background-image: url('./assets/images/bg-today-small.svg')`;
     }
+    Domaccess.dateSpan.textContent = getCurrentDate()
 });
+Domaccess.searchBtn.addEventListener("click", () => getWeatherData());
+Domaccess.dropDowns[0].addEventListener("click", () => dropdownConversion())
