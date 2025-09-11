@@ -55,6 +55,8 @@ header {
   gap: 8px;
   height: 0;
   overflow: hidden;
+  padding: 0;
+  width: 15rem;
 }
 
 .drop {
@@ -66,7 +68,7 @@ header {
   overflow: auto;
 }
 
-.conversion-dropdown * {
+.switch, .scalar-tags, .conversion-dropdown > div {
   padding: 8px;
 }
 
@@ -87,6 +89,15 @@ header {
 
 .switch:hover {
   background-color: var(--bg-trans-lilac);
+}
+
+.selected-unit {
+  background-color: var(--bg-trans-lilac);
+}
+
+.unit {
+  display: flex;
+  justify-content: space-between;
 }
 
 section > h1 {
@@ -172,15 +183,16 @@ section > h1 {
   align-items: center;
 }
 
-.today-icon {
-  max-width: 60px;
-  object-fit: cover;
-}
-
 .icon-and-temp {
   display: flex;
+  align-content: center;
   gap: 3rem;
   align-self: flex-end;
+}
+
+.today-icon {
+  max-width: 100px;
+  object-fit: cover;
 }
 
 .max-temp {
@@ -224,6 +236,23 @@ section > h1 {
   border: 1px solid var(--bg-trans-lilac);
   border-radius: 10px;
   background-color: var(--bg-dk-III);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.8rem 0.5rem;
+}
+
+.day-and-icon {
+  min-height: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.min-and-max-temp {
+  display: flex;
+  justify-content: space-between;
 }
 
 .hourly {
