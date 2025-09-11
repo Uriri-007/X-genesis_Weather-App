@@ -250,6 +250,10 @@ section > h1 {
   align-items: center;
 }
 
+.week-days-icon {
+  max-width: 100px;
+}
+
 .min-and-max-temp {
   display: flex;
   justify-content: space-between;

@@ -15,6 +15,10 @@ const Domaccess = (() => {
     const toggleUnitElem = document.querySelector(".switch");
     const allMetricDivs = document.querySelectorAll(".metric");
     const allImperialDivs = document.querySelectorAll(".imperial");
+    const weekDaysImg = document.querySelectorAll(".week-days-icon");
+    const weekDaysH2 = document.querySelectorAll(".week-days");
+    const weekDaysMinTempDiv = document.querySelectorAll(".min");
+    const weekDaysMaxTempDiv = document.querySelectorAll(".max");
     return {
         bodyElem,
         dropDowns,
@@ -30,10 +34,15 @@ const Domaccess = (() => {
         maxTempSpan,
         toggleUnitElem,
         allMetricDivs,
-        allImperialDivs
+        allImperialDivs,
+        weekDaysImg,
+        weekDaysH2,
+        weekDaysMinTempDiv,
+        weekDaysMaxTempDiv
     };
 })();
 
+//IIFE for creating elements
 const DomCreation = (() => {
     const createdImgArr = [];
     const checkmarkImg = document.createElement("img");
@@ -46,7 +55,6 @@ const DomCreation = (() => {
         createdImgArr
     };
 })();
-let isMetric = true;
 
 //Verify the user input
 function getValidUserData(string) {
@@ -56,7 +64,9 @@ function getValidUserData(string) {
     }
     return string.trim();
 }
+
 //Logic for toggling between metric and imperial units
+let isMetric = true;
 function toggleUnit() {
     if (isMetric) {
         //Imperial mode
@@ -68,7 +78,6 @@ function toggleUnit() {
         showSelectedUnits(isMetric);
     }
 }
-
 function showSelectedUnits(isSelected) {
     if (!isSelected) {
         setTimeout(function () {
@@ -135,33 +144,47 @@ async function getWeatherData() {
     console.log(roughData);
     organizeRawData(roughData);
 }
+
+//Updating the user interface
 function organizeRawData(object) {
     const { current_units: currentUnits, current, daily } = object;
     updateUI(currentUnits, current, daily);
 }
-
-//Updating the user interface
 function updateUI(units, todays, daily) {
-    Domaccess.cityDiv.textContent = Domaccess.cityNameInput.value;
     const todaysData = [
         Math.floor(todays.apparent_temperature) + "°",
         todays.relative_humidity_2m + units.relative_humidity_2m,
         todays.wind_speed_10m + " " + units.wind_speed_10m,
         todays.precipitation + " " + units.precipitation
     ];
-    const dailyValue = [
-        daily.time,
-        Math.floor(daily.temperature_2m_min),
-        Math.floor(daily.temperature_2m_max),
-        daily.weather_code
-    ];
+    const {
+        time: dailyDates,
+        temperature_2m_min: dailyMinTemp,
+        temperature_2m_max: dailyMaxTemp,
+        weather_code: dailyWeatherCode
+    } = daily;
+    Domaccess.cityDiv.textContent = Domaccess.cityNameInput.value;
     Domaccess.maxTempSpan.textContent = Math.floor(todays.temperature_2m) + "°";
     Domaccess.todayIconImg.src = getSuitableIcon(todays.weather_code);
     Domaccess.cityNameInput.value = "";
     Domaccess.cityNameInput.blur();
-    todaysData.forEach((data, index) => {
-        Domaccess.todaysDataSpans[index].textContent = data;
+    Domaccess.todaysDataSpans.forEach((span, index) => {
+        span.textContent = todaysData[index];
     });
+    Domaccess.weekDaysImg.forEach((img, index) => {
+        img.src = getSuitableIcon(dailyWeatherCode[index]);
+    });
+    Domaccess.weekDaysH2.forEach((dayH, index) => {
+        const dateObj = new Date(dailyDates[index]);
+        const fullDateArr = dateObj.toString().split(" ");
+        dayH.textContent = fullDateArr[0];
+    });
+    Domaccess.weekDaysMinTempDiv.forEach((div, index) => {
+      div.textContent = Math.floor(dailyMinTemp[index]) + "°"
+    })
+    Domaccess.weekDaysMaxTempDiv.forEach((div, index) => {
+      div.textContent = Math.floor(dailyMaxTemp[index]) + "°"
+    })
 }
 function getCurrentDate() {
     const date = new Date();
