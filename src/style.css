@@ -17,6 +17,7 @@
   --lg-blue: hsl(233, 67%, 56%);
   --dk-blue: hsl(248, 70%, 36%);
   --lg-fsz: calc(2rem + 2vw);
+  --lg-insane-fsz: calc(2vw + 70px);
 }
 
 @font-face {
@@ -185,6 +186,7 @@ section > h1 {
 
 .icon-and-temp {
   display: flex;
+  flex-direction: row-reverse;
   align-content: center;
   gap: 3rem;
   align-self: flex-end;
@@ -197,7 +199,7 @@ section > h1 {
 
 .max-temp {
   font-family: funky, Sans-Serif;
-  font-size: 6rem;
+  font-size: var(--lg-insane-fsz);
   font-style: italic;
 }
 

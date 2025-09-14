@@ -1,17 +1,3 @@
-//Import all styling and images into the js for webpack
-import "./style.css";
-import smallBgImg from "./assets/images/bg-today-small.svg";
-import largeBgImg from "./assets/images/bg-today-large.svg";
-import sunSvg from "./assets/images/icon-sunny.webp";
-import cloudSvg from "./assets/images/icon-partly-cloudy.webp";
-import overcastSvg from "./assets/images/icon-overcast.webp";
-import fogSvg from "./assets/images/icon-fog.webp";
-import drizzleSvg from "./assets/images/icon-drizzle.webp";
-import rainSvg from "./assets/images/icon-rain.webp";
-import snowSvg from "./assets/images/icon-snow.webp";
-import stormSvg from "./assets/images/icon-storm.webp";
-import checkmarkSvg from "./assets/images/icon-checkmark.svg";
-
 //IIFE for accessing DOM elements
 const Domaccess = (() => {
     const bodyElem = document.querySelector("body");
@@ -24,15 +10,13 @@ const Domaccess = (() => {
     const nextEightHrsDivs = document.querySelectorAll(".eight-hrs-data");
     const cityDiv = document.querySelector(".place-name");
     const dateSpan = document.querySelector(".current-date");
-    const todayIconImg = document.querySelector(".today-icon");
     const maxTempSpan = document.querySelector(".max-temp");
+    const maxTempSpanParent = document.querySelector(".icon-and-temp")
     const toggleUnitElem = document.querySelector(".switch");
     const allMetricDivs = document.querySelectorAll(".metric");
     const allImperialDivs = document.querySelectorAll(".imperial");
-    const weekDaysImg = document.querySelectorAll(".week-days-icon");
-    const weekDaysH2 = document.querySelectorAll(".week-days");
-    const weekDaysMinTempDiv = document.querySelectorAll(".min");
-    const weekDaysMaxTempDiv = document.querySelectorAll(".max");
+    const alldayAndIconDiv = document.querySelectorAll(".day-and-icon");
+    const allMinMaxTempDiv = document.querySelectorAll(".min-and-max-temp");
     return {
         bodyElem,
         dropDowns,
@@ -44,29 +28,66 @@ const Domaccess = (() => {
         nextEightHrsDivs,
         cityDiv,
         dateSpan,
-        todayIconImg,
         maxTempSpan,
+        maxTempSpanParent,
         toggleUnitElem,
         allMetricDivs,
         allImperialDivs,
-        weekDaysImg,
-        weekDaysH2,
-        weekDaysMinTempDiv,
-        weekDaysMaxTempDiv
+        alldayAndIconDiv,
+        allMinMaxTempDiv
     };
 })();
 
 //IIFE for creating elements
 const DomCreation = (() => {
-    const createdImgArr = [];
+    const checkmarkImgArr = [];
+    const currentIconImg = document.createElement("img");
+    currentIconImg.classList.add("today-icon")
     const checkmarkImg = document.createElement("img");
-    checkmarkImg.src = checkmarkSvg;
+    checkmarkImg.src = "./assets/images/icon-checkmark.svg";
     for (let i = 0; i < Domaccess.allImperialDivs.length; i++) {
         const duplicatedImg = checkmarkImg.cloneNode(true);
-        createdImgArr.push(duplicatedImg);
+        checkmarkImgArr.push(duplicatedImg);
+    }
+    
+    const dailyIconArr = []
+    const dailyIconImg = document.createElement("img")
+    dailyIconImg.classList.add("week-days-icon")
+    for (let i = 0; i < Domaccess.alldayAndIconDiv.length; i++) {
+        const duplicatedImg = dailyIconImg.cloneNode(true);
+         dailyIconArr.push(duplicatedImg);
+    }
+    
+    const dailyDateArr = []
+    const dailyDaysH2 = document.createElement("h2")
+    dailyDaysH2.classList.add("week-days")
+    for (let i = 0; i < Domaccess.alldayAndIconDiv.length; i++) {
+        const duplicatedH2 = dailyDaysH2.cloneNode(true);
+        dailyDateArr.push(duplicatedH2);
+    }
+    
+    const minTempArr = []
+    const minTempSpan = document.createElement("span")
+    minTempSpan.classList.add("min")
+    for (let i = 0; i < Domaccess.allMinMaxTempDiv.length; i++) {
+        const duplicatedSpan = minTempSpan.cloneNode(true);
+        minTempArr.push(duplicatedSpan);
+    }
+    
+    const maxTempArr = []
+    const maxTempSpan = document.createElement("span")
+    maxTempSpan.classList.add("max")
+    for (let i = 0; i < Domaccess.allMinMaxTempDiv.length; i++) {
+        const duplicatedSpan = maxTempSpan.cloneNode(true);
+        maxTempArr.push(duplicatedSpan);
     }
     return {
-        createdImgArr
+        checkmarkImgArr,
+        currentIconImg,
+        dailyIconArr,
+        dailyDateArr,
+        minTempArr,
+        maxTempArr
     };
 })();
 
@@ -97,22 +118,22 @@ function showSelectedUnits(isSelected) {
         setTimeout(function () {
             Domaccess.allMetricDivs.forEach((div, index) => {
                 div.classList.remove("selected-unit");
-                div.removeChild(DomCreation.createdImgArr[index]);
+                div.removeChild(DomCreation.checkmarkImgArr[index]);
             });
             Domaccess.allImperialDivs.forEach((div, index) => {
                 div.classList.add("selected-unit");
-                div.appendChild(DomCreation.createdImgArr[index]);
+                div.appendChild(DomCreation.checkmarkImgArr[index]);
             });
         }, 300);
     } else {
         setTimeout(function () {
             Domaccess.allImperialDivs.forEach((div, index) => {
                 div.classList.remove("selected-unit");
-                div.removeChild(DomCreation.createdImgArr[index]);
+                div.removeChild(DomCreation.checkmarkImgArr[index]);
             });
             Domaccess.allMetricDivs.forEach((div, index) => {
                 div.classList.add("selected-unit");
-                div.appendChild(DomCreation.createdImgArr[index]);
+                div.appendChild(DomCreation.checkmarkImgArr[index]);
             });
         }, 300);
     }
@@ -139,10 +160,11 @@ async function geoCodeUserData() {
         console.error("Error fetching data: " + error);
     }
 }
-async function getWeatherData() {
+async function getWeatherData(lat, long) {
+  let rawWeatherData;
+  if(lat === undefined && long === undefined) {
     const coordinatesObj = await geoCodeUserData();
     //Configure the API for metric and imperial units
-    let rawWeatherData;
     if (isMetric) {
         rawWeatherData = await fetch(
             `https://api.open-meteo.com/v1/forecast?latitude=${coordinatesObj.latitude}&longitude=${coordinatesObj.longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,weather_code&current=wind_speed_10m,is_day,precipitation,relative_humidity_2m,temperature_2m,apparent_temperature,weather_code&timezone=auto`,
@@ -154,6 +176,20 @@ async function getWeatherData() {
             { mode: "cors" }
         );
     }
+  } else {
+    //Fetch data using the user browser's coordinates
+    if (isMetric) {
+        rawWeatherData = await fetch(
+            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,weather_code&current=wind_speed_10m,is_day,precipitation,relative_humidity_2m,temperature_2m,apparent_temperature,weather_code&timezone=auto`,
+            { mode: "cors" }
+        );
+    } else {
+        rawWeatherData = await fetch(
+            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,weather_code&current=wind_speed_10m,is_day,precipitation,relative_humidity_2m,temperature_2m,apparent_temperature,weather_code&timezone=auto&wind_speed_unit=mph&temperature_unit=fahrenheit&precipitation_unit=inch`,
+            { mode: "cors" }
+        );
+    }
+  }
     const roughData = await rawWeatherData.json();
     console.log(roughData);
     organizeRawData(roughData);
@@ -183,28 +219,32 @@ function updateUI(units, todays, daily, hourly) {
         weather_code: hourlyWeatherCode
     } = hourly;
     const sevenDaysTime = sliceArrIntoSub(time, 24);
-    console.log(sevenDaysTime);
     Domaccess.cityDiv.textContent = Domaccess.cityNameInput.value;
     Domaccess.maxTempSpan.textContent = Math.floor(todays.temperature_2m) + "°";
-    Domaccess.todayIconImg.src = getSuitableIcon(todays.weather_code);
+    DomCreation.currentIconImg.src = getSuitableIcon(todays.weather_code);
+    Domaccess.maxTempSpanParent.appendChild(DomCreation.currentIconImg)
     Domaccess.cityNameInput.value = "";
     Domaccess.cityNameInput.blur();
     Domaccess.todaysDataSpans.forEach((span, index) => {
         span.textContent = todaysData[index];
     });
-    Domaccess.weekDaysImg.forEach((img, index) => {
-        img.src = getSuitableIcon(dailyWeatherCode[index]);
-    });
-    Domaccess.weekDaysH2.forEach((dayH, index) => {
+    DomCreation.dailyDateArr.forEach((dayH, index) => {
         const dateObj = new Date(dailyDates[index]);
         const fullDateArr = dateObj.toString().split(" ");
         dayH.textContent = fullDateArr[0];
+        Domaccess.alldayAndIconDiv[index].appendChild(dayH)
     });
-    Domaccess.weekDaysMinTempDiv.forEach((div, index) => {
-        div.textContent = Math.floor(dailyMinTemp[index]) + "°";
+    DomCreation.dailyIconArr.forEach((img, index) => {
+        img.src = getSuitableIcon(dailyWeatherCode[index]);
+        Domaccess.alldayAndIconDiv[index].appendChild(img)
     });
-    Domaccess.weekDaysMaxTempDiv.forEach((div, index) => {
-        div.textContent = Math.floor(dailyMaxTemp[index]) + "°";
+    DomCreation.maxTempArr.forEach((span, index) => {
+        span.textContent = Math.floor(dailyMaxTemp[index]) + "°";
+        Domaccess.allMinMaxTempDiv[index].appendChild(span)
+    });
+    DomCreation.minTempArr.forEach((span, index) => {
+        span.textContent = Math.floor(dailyMinTemp[index]) + "°";
+        Domaccess.allMinMaxTempDiv[index].appendChild(span)
     });
 }
 function sliceArrIntoSub(arr, subSize) {
@@ -214,6 +254,22 @@ function sliceArrIntoSub(arr, subSize) {
         subArr.push(shallowCopy);
     }
     return subArr;
+}
+function getCurrentLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                getWeatherData(latitude, longitude)
+            },
+            error => {
+                console.error(`Error getting location: ${error.message}`);
+            }
+        );
+    } else {
+        console.error("Geolocation is not supported by this browser.");
+    }
 }
 function getCurrentDate() {
     const date = new Date();
@@ -249,25 +305,25 @@ function getCurrentDate() {
 }
 function getSuitableIcon(weatherCode) {
     if ([0, 1].some(code => code === weatherCode)) {
-        return sunSvg;
+        return "./assets/images/icon-sunny.webp";
     } else if ([2].some(code => code === weatherCode)) {
-        return cloudSvg;
+        return "./assets/images/icon-partly-cloudy.webp";
     } else if ([3].some(code => code === weatherCode)) {
-        return overcastSvg;
+        return "./assets/images/icon-overcast.webp";
     } else if ([45, 48].some(code => code === weatherCode)) {
-        return fogSvg;
+        return "./assets/images/icon-fog.webp";
     } else if ([51, 53, 55, 56, 57, 80].some(code => code === weatherCode)) {
-        return drizzleSvg;
+        return "./assets/images/icon-drizzle.webp";
     } else if (
         [61, 63, 65, 66, 67, 81, 82].some(code => code === weatherCode)
     ) {
-        return rainSvg;
+        return "./assets/images/icon-rain.webp";
     } else if ([71, 73, 75, 77, 85, 86].some(code => code === weatherCode)) {
-        return snowSvg;
+        return "./assets/images/icon-snow.webp";
     } else if ([95, 96, 99].some(code => code === weatherCode)) {
-        return stormSvg;
+        return "./assets/images/icon-storm.webp";
     } else {
-        return overcastSvg;
+        return "./assets/images/icon-overcast.webp";
     }
 }
 function showLoadingStates() {}
@@ -277,15 +333,16 @@ function dropdownConversion() {
 }
 document.addEventListener("DOMContentLoaded", () => {
     if (innerWidth > 1000) {
-        Domaccess.blueImgDiv.style.cssText = `background-image: url(${largeBgImg})`;
+        Domaccess.blueImgDiv.style.cssText = `background-image: url("./assets/images/bg-today-large.svg")`;
     } else {
-        Domaccess.blueImgDiv.style.cssText = `background-image: url(${smallBgImg})`;
+        Domaccess.blueImgDiv.style.cssText = `background-image: url("./assets/images/bg-today-small.svg")`;
     }
     Domaccess.dateSpan.textContent = getCurrentDate();
     Domaccess.allMetricDivs.forEach((div, index) => {
         div.classList.add("selected-unit");
-        div.appendChild(DomCreation.createdImgArr[index]);
+        div.appendChild(DomCreation.checkmarkImgArr[index]);
     });
+    getCurrentLocation()
 });
 Domaccess.searchBtn.addEventListener("click", () => getWeatherData());
 Domaccess.cityNameInput.addEventListener("keydown", e => {
@@ -297,24 +354,6 @@ Domaccess.cityNameInput.addEventListener("keydown", e => {
 Domaccess.dropDowns[0].addEventListener("click", () => dropdownConversion());
 Domaccess.toggleUnitElem.addEventListener("click", () => toggleUnit());
 
-(function getCurrentLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            position => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-                console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-                alert(latitude + " " + longitude)
-            },
-            error => {
-                console.error(`Error getting location: ${error.message}`);
-                alert(error.message)
-            }
-        );
-    } else {
-        console.error("Geolocation is not supported by this browser.");
-    }
-})()
 /*
 For the daily unit values, add some other values e.g uv, is_day...
 and set the grid to a max of 2 rows
