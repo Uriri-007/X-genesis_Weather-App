@@ -57,15 +57,15 @@ header {
   overflow: hidden;
   padding: 0;
   width: 15rem;
+  transition: height 0.5s ease, padding 0.3s ease;
+  border-radius: 1rem;
 }
 
 .drop {
   height: 422px;
-  transition: height 0.5s ease-in-out;
-  padding: 5px 8px;
-  border-radius: 1rem;
   border: 1px solid var(--bg-trans-lilac);
   overflow: auto;
+  padding: 5px 8px;
 }
 
 .switch, .scalar-tags, .conversion-dropdown > div {
@@ -162,7 +162,7 @@ section > h1 {
 .image-data {
   width: 100%;
   min-height: 286px;
-  background-image: url('/assets/images/bg-today-small.svg');
+  background-image: url('./assets/images/bg-today-small.svg');
   background-repeat: no-repeat;
   background-size: 100%;
   background-position: center;
@@ -290,6 +290,20 @@ section > h1 {
   border: 1px solid var(--bg-trans-lilac);
   border-radius: 10px;
   background-color: var(--bg-dk-III);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1rem 1rem 0.5rem;
+}
+
+.icon-and-time {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.hour-icon {
+  max-width: 50px;
 }
 
 .attribution {

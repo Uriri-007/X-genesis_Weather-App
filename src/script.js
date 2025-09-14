@@ -1,3 +1,17 @@
+//Import all styling and images into the js for webpack
+import "./style.css";
+import smallBgImg from "./assets/images/bg-today-small.svg";
+import largeBgImg from "./assets/images/bg-today-large.svg";
+import sunSvg from "./assets/images/icon-sunny.webp";
+import cloudSvg from "./assets/images/icon-partly-cloudy.webp";
+import overcastSvg from "./assets/images/icon-overcast.webp";
+import fogSvg from "./assets/images/icon-fog.webp";
+import drizzleSvg from "./assets/images/icon-drizzle.webp";
+import rainSvg from "./assets/images/icon-rain.webp";
+import snowSvg from "./assets/images/icon-snow.webp";
+import stormSvg from "./assets/images/icon-storm.webp";
+import checkmarkSvg from "./assets/images/icon-checkmark.svg";
+
 //IIFE for accessing DOM elements
 const Domaccess = (() => {
     const bodyElem = document.querySelector("body");
@@ -46,7 +60,7 @@ const Domaccess = (() => {
 const DomCreation = (() => {
     const createdImgArr = [];
     const checkmarkImg = document.createElement("img");
-    checkmarkImg.src = "./assets/images/icon-checkmark.svg";
+    checkmarkImg.src = checkmarkSvg;
     for (let i = 0; i < Domaccess.allImperialDivs.length; i++) {
         const duplicatedImg = checkmarkImg.cloneNode(true);
         createdImgArr.push(duplicatedImg);
@@ -147,10 +161,10 @@ async function getWeatherData() {
 
 //Updating the user interface
 function organizeRawData(object) {
-    const { current_units: currentUnits, current, daily } = object;
-    updateUI(currentUnits, current, daily);
+    const { current_units: currentUnits, current, daily, hourly } = object;
+    updateUI(currentUnits, current, daily, hourly);
 }
-function updateUI(units, todays, daily) {
+function updateUI(units, todays, daily, hourly) {
     const todaysData = [
         Math.floor(todays.apparent_temperature) + "°",
         todays.relative_humidity_2m + units.relative_humidity_2m,
@@ -163,6 +177,13 @@ function updateUI(units, todays, daily) {
         temperature_2m_max: dailyMaxTemp,
         weather_code: dailyWeatherCode
     } = daily;
+    const {
+        time,
+        temperature_2m: hourlyTemp,
+        weather_code: hourlyWeatherCode
+    } = hourly;
+    const sevenDaysTime = sliceArrIntoSub(time, 24);
+    console.log(sevenDaysTime);
     Domaccess.cityDiv.textContent = Domaccess.cityNameInput.value;
     Domaccess.maxTempSpan.textContent = Math.floor(todays.temperature_2m) + "°";
     Domaccess.todayIconImg.src = getSuitableIcon(todays.weather_code);
@@ -180,11 +201,19 @@ function updateUI(units, todays, daily) {
         dayH.textContent = fullDateArr[0];
     });
     Domaccess.weekDaysMinTempDiv.forEach((div, index) => {
-      div.textContent = Math.floor(dailyMinTemp[index]) + "°"
-    })
+        div.textContent = Math.floor(dailyMinTemp[index]) + "°";
+    });
     Domaccess.weekDaysMaxTempDiv.forEach((div, index) => {
-      div.textContent = Math.floor(dailyMaxTemp[index]) + "°"
-    })
+        div.textContent = Math.floor(dailyMaxTemp[index]) + "°";
+    });
+}
+function sliceArrIntoSub(arr, subSize) {
+    const subArr = [];
+    for (let i = 0; i < arr.length; i += subSize) {
+        const shallowCopy = arr.slice(i, i + subSize);
+        subArr.push(shallowCopy);
+    }
+    return subArr;
 }
 function getCurrentDate() {
     const date = new Date();
@@ -220,25 +249,25 @@ function getCurrentDate() {
 }
 function getSuitableIcon(weatherCode) {
     if ([0, 1].some(code => code === weatherCode)) {
-        return "./assets/images/icon-sunny.webp";
+        return sunSvg;
     } else if ([2].some(code => code === weatherCode)) {
-        return "./assets/images/icon-partly-cloudy.webp";
+        return cloudSvg;
     } else if ([3].some(code => code === weatherCode)) {
-        return "./assets/images/icon-overcast.webp";
+        return overcastSvg;
     } else if ([45, 48].some(code => code === weatherCode)) {
-        return "./assets/images/icon-fog.webp";
+        return fogSvg;
     } else if ([51, 53, 55, 56, 57, 80].some(code => code === weatherCode)) {
-        return "./assets/images/icon-drizzle.webp";
+        return drizzleSvg;
     } else if (
         [61, 63, 65, 66, 67, 81, 82].some(code => code === weatherCode)
     ) {
-        return "./assets/images/icon-rain.webp";
+        return rainSvg;
     } else if ([71, 73, 75, 77, 85, 86].some(code => code === weatherCode)) {
-        return "./assets/images/icon-snow.webp";
+        return snowSvg;
     } else if ([95, 96, 99].some(code => code === weatherCode)) {
-        return "./assets/images/icon-storm.webp";
+        return stormSvg;
     } else {
-        return "./assets/images/icon-overcast.webp";
+        return overcastSvg;
     }
 }
 function showLoadingStates() {}
@@ -248,9 +277,9 @@ function dropdownConversion() {
 }
 document.addEventListener("DOMContentLoaded", () => {
     if (innerWidth > 1000) {
-        Domaccess.blueImgDiv.style.cssText = `background-image: url('./assets/images/bg-today-large.svg')`;
+        Domaccess.blueImgDiv.style.cssText = `background-image: url(${largeBgImg})`;
     } else {
-        Domaccess.blueImgDiv.style.cssText = `background-image: url('./assets/images/bg-today-small.svg')`;
+        Domaccess.blueImgDiv.style.cssText = `background-image: url(${smallBgImg})`;
     }
     Domaccess.dateSpan.textContent = getCurrentDate();
     Domaccess.allMetricDivs.forEach((div, index) => {
@@ -268,19 +297,25 @@ Domaccess.cityNameInput.addEventListener("keydown", e => {
 Domaccess.dropDowns[0].addEventListener("click", () => dropdownConversion());
 Domaccess.toggleUnitElem.addEventListener("click", () => toggleUnit());
 
-function getCurrentLocation() {
+(function getCurrentLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             position => {
                 const latitude = position.coords.latitude;
                 const longitude = position.coords.longitude;
                 console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+                alert(latitude + " " + longitude)
             },
             error => {
                 console.error(`Error getting location: ${error.message}`);
+                alert(error.message)
             }
         );
     } else {
         console.error("Geolocation is not supported by this browser.");
     }
-}
+})()
+/*
+For the daily unit values, add some other values e.g uv, is_day...
+and set the grid to a max of 2 rows
+*/
