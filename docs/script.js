@@ -1,95 +1,5 @@
-//IIFE for accessing DOM elements
-const Domaccess = (() => {
-    const bodyElem = document.querySelector("body");
-    const dropDowns = document.querySelectorAll(".select-box");
-    const cityNameInput = document.querySelector("#city_name");
-    const searchBtn = document.querySelector("#search_btn");
-    const blueImgDiv = document.querySelector(".image-data");
-    const todaysDataSpans = document.querySelectorAll(".present-value");
-    const nextSevenDaysDivs = document.querySelectorAll(".daily-value > div");
-    const nextEightHrsDivs = document.querySelectorAll(".eight-hrs-data");
-    const cityDiv = document.querySelector(".place-name");
-    const dateSpan = document.querySelector(".current-date");
-    const maxTempSpan = document.querySelector(".max-temp");
-    const maxTempSpanParent = document.querySelector(".icon-and-temp")
-    const toggleUnitElem = document.querySelector(".switch");
-    const allMetricDivs = document.querySelectorAll(".metric");
-    const allImperialDivs = document.querySelectorAll(".imperial");
-    const alldayAndIconDiv = document.querySelectorAll(".day-and-icon");
-    const allMinMaxTempDiv = document.querySelectorAll(".min-and-max-temp");
-    return {
-        bodyElem,
-        dropDowns,
-        cityNameInput,
-        searchBtn,
-        blueImgDiv,
-        todaysDataSpans,
-        nextSevenDaysDivs,
-        nextEightHrsDivs,
-        cityDiv,
-        dateSpan,
-        maxTempSpan,
-        maxTempSpanParent,
-        toggleUnitElem,
-        allMetricDivs,
-        allImperialDivs,
-        alldayAndIconDiv,
-        allMinMaxTempDiv
-    };
-})();
-
-//IIFE for creating elements
-const DomCreation = (() => {
-    const checkmarkImgArr = [];
-    const currentIconImg = document.createElement("img");
-    currentIconImg.classList.add("today-icon")
-    const checkmarkImg = document.createElement("img");
-    checkmarkImg.src = "./assets/images/icon-checkmark.svg";
-    for (let i = 0; i < Domaccess.allImperialDivs.length; i++) {
-        const duplicatedImg = checkmarkImg.cloneNode(true);
-        checkmarkImgArr.push(duplicatedImg);
-    }
-    
-    const dailyIconArr = []
-    const dailyIconImg = document.createElement("img")
-    dailyIconImg.classList.add("week-days-icon")
-    for (let i = 0; i < Domaccess.alldayAndIconDiv.length; i++) {
-        const duplicatedImg = dailyIconImg.cloneNode(true);
-         dailyIconArr.push(duplicatedImg);
-    }
-    
-    const dailyDateArr = []
-    const dailyDaysH2 = document.createElement("h2")
-    dailyDaysH2.classList.add("week-days")
-    for (let i = 0; i < Domaccess.alldayAndIconDiv.length; i++) {
-        const duplicatedH2 = dailyDaysH2.cloneNode(true);
-        dailyDateArr.push(duplicatedH2);
-    }
-    
-    const minTempArr = []
-    const minTempSpan = document.createElement("span")
-    minTempSpan.classList.add("min")
-    for (let i = 0; i < Domaccess.allMinMaxTempDiv.length; i++) {
-        const duplicatedSpan = minTempSpan.cloneNode(true);
-        minTempArr.push(duplicatedSpan);
-    }
-    
-    const maxTempArr = []
-    const maxTempSpan = document.createElement("span")
-    maxTempSpan.classList.add("max")
-    for (let i = 0; i < Domaccess.allMinMaxTempDiv.length; i++) {
-        const duplicatedSpan = maxTempSpan.cloneNode(true);
-        maxTempArr.push(duplicatedSpan);
-    }
-    return {
-        checkmarkImgArr,
-        currentIconImg,
-        dailyIconArr,
-        dailyDateArr,
-        minTempArr,
-        maxTempArr
-    };
-})();
+//Import Domaccess and DomCreation
+import { Domaccess, DomCreation } from "./dom.js";
 
 //Verify the user input
 function getValidUserData(string) {
@@ -161,35 +71,35 @@ async function geoCodeUserData() {
     }
 }
 async function getWeatherData(lat, long) {
-  let rawWeatherData;
-  if(lat === undefined && long === undefined) {
-    const coordinatesObj = await geoCodeUserData();
-    //Configure the API for metric and imperial units
-    if (isMetric) {
-        rawWeatherData = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${coordinatesObj.latitude}&longitude=${coordinatesObj.longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,weather_code&current=wind_speed_10m,is_day,precipitation,relative_humidity_2m,temperature_2m,apparent_temperature,weather_code&timezone=auto`,
-            { mode: "cors" }
-        );
+    let rawWeatherData;
+    if (lat === undefined && long === undefined) {
+        const coordinatesObj = await geoCodeUserData();
+        //Configure the API for metric and imperial units
+        if (isMetric) {
+            rawWeatherData = await fetch(
+                `https://api.open-meteo.com/v1/forecast?latitude=${coordinatesObj.latitude}&longitude=${coordinatesObj.longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,weather_code&current=wind_speed_10m,is_day,precipitation,relative_humidity_2m,temperature_2m,apparent_temperature,weather_code&timezone=auto`,
+                { mode: "cors" }
+            );
+        } else {
+            rawWeatherData = await fetch(
+                `https://api.open-meteo.com/v1/forecast?latitude=${coordinatesObj.latitude}&longitude=${coordinatesObj.longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,weather_code&current=wind_speed_10m,is_day,precipitation,relative_humidity_2m,temperature_2m,apparent_temperature,weather_code&timezone=auto&wind_speed_unit=mph&temperature_unit=fahrenheit&precipitation_unit=inch`,
+                { mode: "cors" }
+            );
+        }
     } else {
-        rawWeatherData = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${coordinatesObj.latitude}&longitude=${coordinatesObj.longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,weather_code&current=wind_speed_10m,is_day,precipitation,relative_humidity_2m,temperature_2m,apparent_temperature,weather_code&timezone=auto&wind_speed_unit=mph&temperature_unit=fahrenheit&precipitation_unit=inch`,
-            { mode: "cors" }
-        );
+        //Fetch data using the user browser's coordinates
+        if (isMetric) {
+            rawWeatherData = await fetch(
+                `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,weather_code&current=wind_speed_10m,is_day,precipitation,relative_humidity_2m,temperature_2m,apparent_temperature,weather_code&timezone=auto`,
+                { mode: "cors" }
+            );
+        } else {
+            rawWeatherData = await fetch(
+                `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,weather_code&current=wind_speed_10m,is_day,precipitation,relative_humidity_2m,temperature_2m,apparent_temperature,weather_code&timezone=auto&wind_speed_unit=mph&temperature_unit=fahrenheit&precipitation_unit=inch`,
+                { mode: "cors" }
+            );
+        }
     }
-  } else {
-    //Fetch data using the user browser's coordinates
-    if (isMetric) {
-        rawWeatherData = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,weather_code&current=wind_speed_10m,is_day,precipitation,relative_humidity_2m,temperature_2m,apparent_temperature,weather_code&timezone=auto`,
-            { mode: "cors" }
-        );
-    } else {
-        rawWeatherData = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,weather_code&current=wind_speed_10m,is_day,precipitation,relative_humidity_2m,temperature_2m,apparent_temperature,weather_code&timezone=auto&wind_speed_unit=mph&temperature_unit=fahrenheit&precipitation_unit=inch`,
-            { mode: "cors" }
-        );
-    }
-  }
     const roughData = await rawWeatherData.json();
     console.log(roughData);
     organizeRawData(roughData);
@@ -200,12 +110,12 @@ function organizeRawData(object) {
     const { current_units: currentUnits, current, daily, hourly } = object;
     updateUI(currentUnits, current, daily, hourly);
 }
-function updateUI(units, todays, daily, hourly) {
-    const todaysData = [
-        Math.floor(todays.apparent_temperature) + "°",
-        todays.relative_humidity_2m + units.relative_humidity_2m,
-        todays.wind_speed_10m + " " + units.wind_speed_10m,
-        todays.precipitation + " " + units.precipitation
+function updateUI(units, current, daily, hourly) {
+    const currentData = [
+        Math.floor(current.apparent_temperature) + "°",
+        current.relative_humidity_2m + units.relative_humidity_2m,
+        current.wind_speed_10m + " " + units.wind_speed_10m,
+        current.precipitation + " " + units.precipitation
     ];
     const {
         time: dailyDates,
@@ -213,38 +123,79 @@ function updateUI(units, todays, daily, hourly) {
         temperature_2m_max: dailyMaxTemp,
         weather_code: dailyWeatherCode
     } = daily;
+    const currentTime = current.time;
     const {
         time,
         temperature_2m: hourlyTemp,
         weather_code: hourlyWeatherCode
     } = hourly;
     const sevenDaysTime = sliceArrIntoSub(time, 24);
-    Domaccess.cityDiv.textContent = Domaccess.cityNameInput.value;
-    Domaccess.maxTempSpan.textContent = Math.floor(todays.temperature_2m) + "°";
-    DomCreation.currentIconImg.src = getSuitableIcon(todays.weather_code);
-    Domaccess.maxTempSpanParent.appendChild(DomCreation.currentIconImg)
+    const sevenDaysTemp = sliceArrIntoSub(hourlyTemp, 24)
+    const sevenDaysCode = sliceArrIntoSub(hourlyWeatherCode, 24)
+    const liveTimeArr = sevenDaysTime.find(arr => {
+        const reArrangedCurrentTime = `${currentTime.split(":")[0]}:00`;
+        return arr.includes(reArrangedCurrentTime);
+    });
+    const nowHrIndex = liveTimeArr.findIndex(time => {
+      const reArrangedCurrentTime = `${currentTime.split(":")[0]}:00`;
+      return time === reArrangedCurrentTime
+    })
+    const nowAndNextHrArr = liveTimeArr.slice(nowHrIndex)
+    const nowIndex = sevenDaysTime.findIndex(arr => arr[0] === liveTimeArr[0])
+    const liveTempArr = sevenDaysTemp[nowIndex]
+    const nowAndNextTempArr = liveTempArr.slice(nowHrIndex)
+    const liveCodeArr = sevenDaysCode[nowIndex]
+    const nowAndNextCodeArr = liveCodeArr.slice(nowHrIndex)
+    nowAndNextHrArr.forEach((time, index) => {
+       const hour = time.split("T")[1].split(":")[0]
+       const dayHrTempDiv = document.createElement("div")
+       const iconTimeDiv = document.createElement("div")
+       const hrIconImg = document.createElement("img")
+       const hrSpan = document.createElement("span")
+       const hrTemp = document.createElement("span")
+       Domaccess.eightHrsDiv.appendChild(dayHrTempDiv)
+       iconTimeDiv.appendChild(hrIconImg)
+       iconTimeDiv.appendChild(hrSpan)
+       dayHrTempDiv.appendChild(iconTimeDiv)
+       dayHrTempDiv.appendChild(hrTemp)
+       iconTimeDiv.classList.add("icon-and-time")
+       hrIconImg.classList.add("hour-icon")
+       hrSpan.classList.add("hour")
+       hrTemp.classList.add("hour-temp")
+       hrIconImg.src = getSuitableIcon(nowAndNextCodeArr[index])
+       hrSpan.textContent = renderTime(hour)
+       hrTemp.textContent = `${Math.floor(nowAndNextTempArr[index])}°`
+     })
+    
+    Domaccess.loadingDiv.style.display = "none";
+    Domaccess.cityDiv.textContent = !Domaccess.cityNameInput.value
+        ? "Your Current Location"
+        : Domaccess.cityNameInput.value;
+    Domaccess.maxTempSpan.textContent = Math.floor(current.temperature_2m) + "°";
+    DomCreation.currentIconImg.src = getSuitableIcon(current.weather_code);
+    Domaccess.maxTempSpanParent.appendChild(DomCreation.currentIconImg);
     Domaccess.cityNameInput.value = "";
     Domaccess.cityNameInput.blur();
     Domaccess.todaysDataSpans.forEach((span, index) => {
-        span.textContent = todaysData[index];
+        span.textContent = currentData[index];
     });
     DomCreation.dailyDateArr.forEach((dayH, index) => {
         const dateObj = new Date(dailyDates[index]);
         const fullDateArr = dateObj.toString().split(" ");
         dayH.textContent = fullDateArr[0];
-        Domaccess.alldayAndIconDiv[index].appendChild(dayH)
+        Domaccess.alldayAndIconDiv[index].appendChild(dayH);
     });
     DomCreation.dailyIconArr.forEach((img, index) => {
         img.src = getSuitableIcon(dailyWeatherCode[index]);
-        Domaccess.alldayAndIconDiv[index].appendChild(img)
+        Domaccess.alldayAndIconDiv[index].appendChild(img);
     });
     DomCreation.maxTempArr.forEach((span, index) => {
         span.textContent = Math.floor(dailyMaxTemp[index]) + "°";
-        Domaccess.allMinMaxTempDiv[index].appendChild(span)
+        Domaccess.allMinMaxTempDiv[index].appendChild(span);
     });
     DomCreation.minTempArr.forEach((span, index) => {
         span.textContent = Math.floor(dailyMinTemp[index]) + "°";
-        Domaccess.allMinMaxTempDiv[index].appendChild(span)
+        Domaccess.allMinMaxTempDiv[index].appendChild(span);
     });
 }
 function sliceArrIntoSub(arr, subSize) {
@@ -261,7 +212,7 @@ function getCurrentLocation() {
             position => {
                 const latitude = position.coords.latitude;
                 const longitude = position.coords.longitude;
-                getWeatherData(latitude, longitude)
+                getWeatherData(latitude, longitude);
             },
             error => {
                 console.error(`Error getting location: ${error.message}`);
@@ -303,6 +254,15 @@ function getCurrentDate() {
 
     return days[weekDay] + ", " + months[month] + " " + monthDay + ", " + year;
 }
+function renderTime(time) {
+  if (time > 12) {
+    return `${time % 12} PM`
+  } else if(time === 12) {
+    return `${time} PM`
+  } else {
+    return `${time * 1} AM`
+  }
+}
 function getSuitableIcon(weatherCode) {
     if ([0, 1].some(code => code === weatherCode)) {
         return "./assets/images/icon-sunny.webp";
@@ -326,7 +286,19 @@ function getSuitableIcon(weatherCode) {
         return "./assets/images/icon-overcast.webp";
     }
 }
-function showLoadingStates() {}
+function showLoadingStates() {
+    Domaccess.loadingDiv.style.display = "flex";
+    Domaccess.allMinMaxTempDiv.forEach(div => {
+        div.innerHTML = "";
+    });
+    Domaccess.alldayAndIconDiv.forEach(div => {
+        div.innerHTML = "";
+    });
+    Domaccess.todaysDataSpans.forEach(span => {
+        span.innerText = "—";
+    });
+    Domaccess.eightHrsDiv.innerHTML = ""
+}
 function dropdownConversion() {
     const conversionBox = Domaccess.toggleUnitElem.parentElement;
     conversionBox.classList.toggle("drop");
@@ -342,11 +314,16 @@ document.addEventListener("DOMContentLoaded", () => {
         div.classList.add("selected-unit");
         div.appendChild(DomCreation.checkmarkImgArr[index]);
     });
-    getCurrentLocation()
+    getCurrentLocation();
 });
-Domaccess.searchBtn.addEventListener("click", () => getWeatherData());
+Domaccess.searchBtn.addEventListener("click", () => {
+    showLoadingStates();
+    getWeatherData();
+    return
+});
 Domaccess.cityNameInput.addEventListener("keydown", e => {
     if (e.key === "Enter") {
+        showLoadingStates();
         getWeatherData();
         return;
     }
