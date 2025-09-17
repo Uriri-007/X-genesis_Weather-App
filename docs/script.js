@@ -140,12 +140,27 @@ function updateUI(units, current, daily, hourly) {
       const reArrangedCurrentTime = `${currentTime.split(":")[0]}:00`;
       return time === reArrangedCurrentTime
     })
-    const nowAndNextHrArr = liveTimeArr.slice(nowHrIndex)
+    let nowAndNextHrArr;
+    if(nowHrIndex < liveTimeArr.length - 8) {
+      nowAndNextHrArr = liveTimeArr.splice(nowHrIndex, 8)
+    } else {
+      nowAndNextHrArr = liveTimeArr.slice(nowHrIndex)
+    }
     const nowIndex = sevenDaysTime.findIndex(arr => arr[0] === liveTimeArr[0])
     const liveTempArr = sevenDaysTemp[nowIndex]
-    const nowAndNextTempArr = liveTempArr.slice(nowHrIndex)
+    let nowAndNextTempArr;
+    if(nowHrIndex < liveTempArr.length - 8) {
+      nowAndNextTempArr = liveTempArr.splice(nowHrIndex, 8)
+    } else {
+      nowAndNextTempArr = liveTempArr.slice(nowHrIndex)
+    }
     const liveCodeArr = sevenDaysCode[nowIndex]
-    const nowAndNextCodeArr = liveCodeArr.slice(nowHrIndex)
+    let nowAndNextCodeArr;
+    if(nowHrIndex < liveCodeArr.length - 8) {
+      nowAndNextCodeArr = liveCodeArr.splice(nowHrIndex, 8)
+    } else {
+      nowAndNextCodeArr = liveCodeArr.slice(nowHrIndex)
+    }
     nowAndNextHrArr.forEach((time, index) => {
        const hour = time.split("T")[1].split(":")[0]
        const dayHrTempDiv = document.createElement("div")
@@ -257,7 +272,7 @@ function getCurrentDate() {
 function renderTime(time) {
   if (time > 12) {
     return `${time % 12} PM`
-  } else if(time === 12) {
+  } else if(time == 12) {
     return `${time} PM`
   } else {
     return `${time * 1} AM`
