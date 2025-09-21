@@ -25,7 +25,7 @@
   src: url("./assets/fonts/Bricolage_Grotesque/BricolageGrotesque-Variablefont.ttf");
 }
 
-body {
+b {
   background-color: var(--bg-dk-neutral);
   color: var(--white);
   padding: 1rem;
@@ -279,7 +279,7 @@ section > h1 {
 }
 
 .hourly {
-  padding: 1rem;
+  padding: 1rem 1rem 8px 1rem;
   background-color: var(--bg-dk-II);
   border-radius: 1rem;
   flex: 1;
@@ -313,7 +313,7 @@ section > h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1rem 1rem 0.5rem;
+  padding: 8px;
 }
 
 .icon-and-time {
@@ -345,6 +345,11 @@ section > h1 {
 }
 
 @media screen and (min-width: 768px) {
+  body {
+    padding: 2rem;
+    padding-bottom: 4rem;
+  }
+  
   .search-area {
     justify-content: center;
   }
