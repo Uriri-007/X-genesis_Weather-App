@@ -25,7 +25,7 @@
   src: url("./assets/fonts/Bricolage_Grotesque/BricolageGrotesque-Variablefont.ttf");
 }
 
-b {
+body {
   background-color: var(--bg-dk-neutral);
   color: var(--white);
   padding: 1rem;
