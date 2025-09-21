@@ -182,7 +182,9 @@ function updateUI(units, current, daily, hourly) {
        hrTemp.textContent = `${Math.floor(nowAndNextTempArr[index])}°`
      })
     
-    Domaccess.loadingDiv.style.display = "none";
+    Domaccess.loadingDiv.classList.add("hidden");
+    Domaccess.maxTempSpanParent.classList.remove("hidden")
+    Domaccess.cityAndDateDiv.classList.remove("hidden")
     Domaccess.cityDiv.textContent = !Domaccess.cityNameInput.value
         ? "Your Current Location"
         : Domaccess.cityNameInput.value;
@@ -302,7 +304,9 @@ function getSuitableIcon(weatherCode) {
     }
 }
 function showLoadingStates() {
-    Domaccess.loadingDiv.style.display = "flex";
+    Domaccess.loadingDiv.classList.remove("hidden");
+    Domaccess.maxTempSpanParent.classList.add("hidden")
+    Domaccess.cityAndDateDiv.classList.add("hidden")
     Domaccess.allMinMaxTempDiv.forEach(div => {
         div.innerHTML = "";
     });

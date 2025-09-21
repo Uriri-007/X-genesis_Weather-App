@@ -11,7 +11,8 @@ const Domaccess = (() => {
     const cityDiv = document.querySelector(".place-name");
     const dateSpan = document.querySelector(".current-date");
     const maxTempSpan = document.querySelector(".max-temp");
-    const maxTempSpanParent = document.querySelector(".icon-and-temp")
+    const maxTempSpanParent = document.querySelector(".icon-and-temp");
+    const cityAndDateDiv = document.querySelector(".name-and-date");
     const toggleUnitElem = document.querySelector(".switch");
     const allMetricDivs = document.querySelectorAll(".metric");
     const allImperialDivs = document.querySelectorAll(".imperial");
@@ -30,6 +31,7 @@ const Domaccess = (() => {
         dateSpan,
         maxTempSpan,
         maxTempSpanParent,
+        cityAndDateDiv,
         toggleUnitElem,
         allMetricDivs,
         allImperialDivs,
