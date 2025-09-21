@@ -351,7 +351,20 @@ Domaccess.cityNameInput.addEventListener("keydown", e => {
 Domaccess.dropDowns[0].addEventListener("click", () => dropdownConversion());
 Domaccess.toggleUnitElem.addEventListener("click", () => toggleUnit());
 
-/*
-For the daily unit values, add some other values e.g uv, is_day...
-and set the grid to a max of 2 rows
-*/
+
+
+
+
+//Code for PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(registration => {
+        console.log('Service Worker registered with scope:', registration.scope);
+      })
+      .catch(error => {
+        console.log('Service Worker registration failed:', error);
+      });
+  });
+}
+
