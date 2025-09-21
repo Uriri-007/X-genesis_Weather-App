@@ -281,7 +281,8 @@ section > h1 {
 }
 
 .week-days-icon {
-  max-width: 100px;
+  max-width: 70px;
+  object-fit: cover;
 }
 
 .min-and-max-temp {

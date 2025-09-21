@@ -161,6 +161,7 @@ function updateUI(units, current, daily, hourly) {
     } else {
       nowAndNextCodeArr = liveCodeArr.slice(nowHrIndex)
     }
+    Domaccess.eightHrsDiv.innerHTML = ""
     nowAndNextHrArr.forEach((time, index) => {
        const hour = time.split("T")[1].split(":")[0]
        const dayHrTempDiv = document.createElement("div")
