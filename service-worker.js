@@ -1,9 +1,9 @@
 const CACHE_NAME = 'my-pwa-cache-v1';
 const urlsToCache = [
-  '/',
-  './index.html',
-  './style.css',
-  './script.js'
+  '/X-genesis_Weather-App/',
+  '/X-genesis_Weather-App/index.html',
+  '/X-genesis_Weather-App/style.css',
+  '/X-genesis_Weather-App/script.js'
 ];
 
 self.addEventListener('install', event => {
